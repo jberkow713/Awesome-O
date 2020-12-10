@@ -9,7 +9,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 nltk.download('punkt', quiet=True)
-article = Article('https://www.mayoclinic.org/diseases-conditions/chronic-kidney-disease/symptoms-causes/syc-20354521')
+article = Article('https://www.rollingstone.com/music/music-features/eddie-van-halen-tribute-1081034/')
 article.download()
 article.parse()
 article.nlp()
@@ -34,7 +34,7 @@ def greeting_response(text):
         if word in user_greetings:
             return random.choice(bot_greetings)
 
-print(greeting_response("hey there"))
+# print(greeting_response("hey there"))
 
 def index_sort(list_var):
     length = len(list_var)
@@ -66,9 +66,8 @@ def bot_response(user_input):
         if similarity_scores_list[index[i]] > 0.0:
             bot_response = bot_response + ' ' + sentence_list[index[i]]
             response_flag = 1
-            j +=1
-        if j>2:
             break
+        
     if response_flag == 0:
 
         #didnt find similar sentence:
@@ -76,15 +75,70 @@ def bot_response(user_input):
         bot_response = bot_response + ' ' + "Sorry, I could not find what you're looking for."     
     sentence_list.remove(user_input)
     return bot_response
-print("I am Doc_Bot: I am here to help you with your Kidney problems")
-exit_list = ['exit', 'see you later', 'bye', 'quit']
-while(True):
-    user_input = input()
-    if user_input in exit_list:
-        print("See you later")
-        break
-    else:
-        if greeting_response(user_input) != None:
-            print("Doc Bot:" + greeting_response(user_input))
-        else:
-            print('Doc Bot:' + bot_response(user_input))    
+
+def tokenize(article):
+
+    #Take an article, based on a website, returns list of all words, Cleaned
+    article.download()
+    article.parse()
+    article.nlp()
+    corpus = article.text
+    
+    text = corpus
+    sentence_list = nltk.sent_tokenize(text)
+
+    Word_list = []
+    
+    Words2 = []
+    Words = []
+    
+    for sentence in sentence_list:
+        words = sentence.split()
+        
+        Word_list.append(words)
+        
+    stopwords = nltk.corpus.stopwords.words('english')
+
+    for lists in Word_list:
+        for word in lists:
+            word = word.replace(",", "")
+            word = word.replace(".", "")
+            word = word.replace("?", "")
+            word = word.lower()
+            if '”' not in word and '“' not in word and '-' not in word and '/' not in word\
+                and '(' not in word and ')' not in word:
+            
+                if word not in stopwords:
+                    
+                    Words2.append(word)
+    
+    from nltk.tokenize import RegexpTokenizer
+    tokenizer = RegexpTokenizer(r'\w+')
+    for word in Words2:
+        tokenizer.tokenize(word)
+        Words.append(word)
+
+
+    return(Words)
+    
+    
+    
+    
+
+
+
+print(tokenize(article))
+
+# print("I am Doc_Bot: I am here to help you learn about Eddie Van Halen")
+# print("What do you want to know?")
+# exit_list = ['exit', 'see you later', 'bye', 'quit']
+# while(True):
+#     user_input = input()
+#     if user_input in exit_list:
+#         print("See you later")
+#         break
+#     else:
+#         if greeting_response(user_input) != None:
+#             print("Doc Bot:" + greeting_response(user_input))
+#         else:
+#             print('Doc Bot:' + bot_response(user_input))    
